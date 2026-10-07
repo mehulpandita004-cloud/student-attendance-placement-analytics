@@ -2,10 +2,13 @@
  * API Client for Student Attendance, Performance & Placement Analytics System
  */
 
-// Dynamically determine API Base URL:
-const API_BASE_URL = (window.location.protocol === 'http:' || window.location.protocol === 'https:') 
-  && window.location.port === '8000'
-    ? window.location.origin
+// Prefer root-relative API URLs (e.g. '', leading to /students, /health, /attendance)
+// when running in the browser on Render, a web domain, or any HTTP/HTTPS server.
+// Fallback to 'http://127.0.0.1:8000' only when opened directly as a local file (file://).
+const API_BASE_URL = (typeof window !== 'undefined' && window.BACKEND_API_URL)
+  ? window.BACKEND_API_URL
+  : (typeof window !== 'undefined' && (window.location.protocol === 'http:' || window.location.protocol === 'https:'))
+    ? ''
     : 'http://127.0.0.1:8000';
 
 const API = {
@@ -13,10 +16,14 @@ const API = {
 
   async checkHealth() {
     try {
-      const res = await fetch(`${this.baseUrl}/api/health`);
+      const res = await fetch(`${this.baseUrl}/health`);
       if (!res.ok) throw new Error("Health check failed");
       return await res.json();
     } catch (err) {
+      try {
+        const fallback = await fetch(`${this.baseUrl}/api/health`);
+        if (fallback.ok) return await fallback.json();
+      } catch (e) {}
       console.warn("Backend API unavailable:", err.message);
       return null;
     }
@@ -372,7 +379,7 @@ window.updateBackendStatus = async function() {
   if (!pill || !text) return;
 
   const health = await API.checkHealth();
-  if (health && health.status === "healthy") {
+  if (health && (health.status === "ok" || health.status === "healthy")) {
     pill.classList.remove("error");
     text.textContent = "Backend API: Online";
   } else {

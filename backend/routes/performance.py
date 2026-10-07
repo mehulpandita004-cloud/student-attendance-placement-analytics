@@ -76,12 +76,6 @@ def get_performance_analytics(
     - Branch-wise comparison
     - Top student leaderboard
     """
-    accept_header = request.headers.get("accept", "")
-    if "text/html" in accept_header and not branch and not year:
-        performance_html = os.path.join(FRONTEND_DIR, "performance.html")
-        if os.path.exists(performance_html):
-            return FileResponse(performance_html)
-
     query = db.query(Student)
     if branch and branch != "All":
         query = query.filter(Student.branch == branch)

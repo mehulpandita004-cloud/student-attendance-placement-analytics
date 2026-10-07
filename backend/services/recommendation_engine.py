@@ -82,7 +82,7 @@ def generate_student_recommendations(db: Session, student_id: int) -> Dict[str, 
                 "subject": r.subject,
                 "title": f"Attendance Alert: {r.subject}",
                 "message": msg,
-                "metric": f"{r.attendance_percentage}% (Required: ≥75%)",
+                "metric": f"{r.attendance_percentage}% (Required: >=75%)",
                 "action_cta": f"Attend next {needed} consecutive lectures",
                 "priority": 1
             }

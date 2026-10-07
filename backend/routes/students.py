@@ -23,14 +23,7 @@ def get_all_students(
     placement_status: Optional[str] = Query(None, description="Filter by placement status"),
     db: Session = Depends(get_db)
 ):
-    """Retrieve all students with optional search and filters, or serve HTML if navigated from browser."""
-    # If opened directly in browser without API query params, serve the interactive HTML page
-    accept_header = request.headers.get("accept", "")
-    if "text/html" in accept_header and not search and not branch and not year and not placement_status:
-        students_html_path = os.path.join(FRONTEND_DIR, "students.html")
-        if os.path.exists(students_html_path):
-            return FileResponse(students_html_path)
-
+    """Retrieve all students with optional search and filters."""
     query = db.query(Student)
 
     if branch and branch != "All":

@@ -1,13 +1,15 @@
 import os
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, RedirectResponse
 
-from backend.database import init_db, SessionLocal
+from backend.database import init_db, SessionLocal, engine, get_db
 from backend.services.seed_data import seed_initial_data
 from backend.routes import students, analytics, placement, attendance, performance, ml_predictions, recommendations
+from sqlalchemy.orm import Session
+from sqlalchemy import text
 
 # Lifespan event to create tables, migrate columns, and seed sample data
 @asynccontextmanager
@@ -21,6 +23,10 @@ async def lifespan(app: FastAPI):
         seed_initial_data(db)
     finally:
         db.close()
+
+    # 3. Warm up & verify ML predictive models
+    from backend.ml.predictor import ensure_models_trained
+    ensure_models_trained()
     
     yield
 
@@ -31,11 +37,11 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Enable CORS for frontend cross-origin requests
+# Enable CORS for cross-origin requests
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -53,16 +59,40 @@ app.include_router(ml_predictions.router)
 app.include_router(ml_predictions.router, prefix="/api", include_in_schema=False)
 app.include_router(recommendations.router)
 
-
-# Health Check Endpoint
+# Health Check Endpoints (GET /health and GET /api/health)
+@app.get("/health", tags=["Health"])
 @app.get("/api/health", tags=["Health"])
 def health_check():
+    """Verify system and SQLite database connectivity status."""
+    db_status = "connected"
+    try:
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+    except Exception as e:
+        db_status = f"error: {str(e)}"
+
     return {
-        "status": "healthy",
+        "status": "ok" if db_status == "connected" else "error",
+        "database": db_status,
         "service": "Student Attendance, Performance & Placement Analytics API",
-        "version": "1.0.0",
-        "database": "SQLite (connected)"
+        "version": "1.0.0"
     }
+
+# Convenient aliases for relative endpoints
+@app.get("/placement-drives", tags=["Placement Drives & Eligibility Engine"])
+def list_placement_drives_alias(db: Session = Depends(get_db)):
+    from backend.routes.placement import get_placement_drives
+    return get_placement_drives(db=db)
+
+@app.get("/student-dashboard/{student_id}", tags=["Personalized Recommendations & Student Portal"])
+def student_dashboard_alias(student_id: int, db: Session = Depends(get_db)):
+    from backend.routes.recommendations import get_student_dashboard_endpoint
+    return get_student_dashboard_endpoint(student_id=student_id, db=db)
+
+@app.get("/recommendations/student/{student_id}", tags=["Personalized Recommendations & Student Portal"])
+def student_recommendations_alias(student_id: int, db: Session = Depends(get_db)):
+    from backend.routes.recommendations import get_student_recommendations_endpoint
+    return get_student_recommendations_endpoint(student_id=student_id, db=db)
 
 # Mount Frontend static files for seamless local serving
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -74,8 +104,14 @@ if os.path.exists(FRONTEND_DIR):
     app.mount("/js", StaticFiles(directory=os.path.join(FRONTEND_DIR, "js")), name="js")
 
     @app.get("/", tags=["Frontend"])
+    @app.get("/index.html", tags=["Frontend"])
     def serve_index():
         return FileResponse(os.path.join(FRONTEND_DIR, "index.html"))
+
+    @app.get("/favicon.ico", include_in_schema=False)
+    def favicon():
+        from fastapi import Response
+        return Response(status_code=204)
 
     @app.get("/dashboard", tags=["Frontend"])
     @app.get("/dashboard.html", tags=["Frontend"])
@@ -127,4 +163,6 @@ if os.path.exists(FRONTEND_DIR):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("backend.main:app", host="127.0.0.1", port=8000, reload=True)
+    port = int(os.environ.get("PORT", 8000))
+    host = os.environ.get("HOST", "0.0.0.0")
+    uvicorn.run("backend.main:app", host=host, port=port, reload=False)

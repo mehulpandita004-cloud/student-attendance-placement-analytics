@@ -107,13 +107,7 @@ def get_all_attendance(
     risk_level: Optional[str] = Query(None, description="Filter by rule-based risk level (Low Risk, Medium Risk, High Risk)"),
     db: Session = Depends(get_db)
 ):
-    """Retrieve attendance records with optional filtering, or serve HTML if navigated from browser."""
-    accept_header = request.headers.get("accept", "")
-    if "text/html" in accept_header and not student_id and not subject and not risk_level:
-        attendance_html_path = os.path.join(FRONTEND_DIR, "attendance.html")
-        if os.path.exists(attendance_html_path):
-            return FileResponse(attendance_html_path)
-
+    """Retrieve attendance records with optional filtering."""
     query = db.query(Attendance)
 
     if student_id:
