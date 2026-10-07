@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Students Management - Student Analytics System</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-icon">🎓</div>
+        <div class="logo-text">
+          EduAnalytics
+          <span>College Intelligence</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-label">Dashboards</div>
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span>1. Admin Dashboard</span>
+        </a>
+        <a href="student-dashboard.html" class="nav-item">
+          <span class="nav-icon">🎓</span>
+          <span>2. Student Portal</span>
+        </a>
+
+        <div class="nav-label" style="margin-top: 0.75rem;">Core Modules</div>
+        <a href="students.html" class="nav-item active">
+          <span class="nav-icon">👥</span>
+          <span>3. Students</span>
+        </a>
+        <a href="attendance.html" class="nav-item">
+          <span class="nav-icon">📅</span>
+          <span>4. Attendance</span>
+        </a>
+        <a href="performance.html" class="nav-item">
+          <span class="nav-icon">📈</span>
+          <span>5. Performance</span>
+        </a>
+        <a href="placement.html" class="nav-item">
+          <span class="nav-icon">💼</span>
+          <span>6. Placement Drives</span>
+        </a>
+
+        <div class="nav-label" style="margin-top: 0.75rem;">Placement Screening</div>
+        <a href="eligibility.html" class="nav-item">
+          <span class="nav-icon">🎯</span>
+          <span>7. Eligibility Engine</span>
+        </a>
+        <a href="drive-candidates.html" class="nav-item">
+          <span class="nav-icon">📋</span>
+          <span>8. Drive Candidates</span>
+        </a>
+
+        <div class="nav-label" style="margin-top: 0.75rem;">Intelligence & ML</div>
+        <a href="ml-dashboard.html" class="nav-item">
+          <span class="nav-icon">🤖</span>
+          <span>9. ML Predictions</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="system-status">
+          <div class="status-dot"></div>
+          <span>SQLite Database Connected</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="main-wrapper">
+      <header class="topbar">
+        <div class="topbar-title">
+          <h1>Student Management & Profiles</h1>
+          <p>Academic performance, technical skills, projects, and placement profiles</p>
+        </div>
+        <div class="topbar-actions">
+          <div id="backend-status-pill" class="api-pill">
+            <span class="status-dot"></span>
+            <span id="backend-status-text">Checking Backend...</span>
+          </div>
+          <button id="openAddStudentModal" class="btn btn-primary btn-sm">+ Add New Student</button>
+        </div>
+      </header>
+
+      <div class="content-area">
+
+        <!-- Controls & Filters Bar -->
+        <div class="filter-bar">
+          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; flex: 1;">
+            <div class="search-input-group" style="flex: 1; max-width: 380px;">
+              <span>🔍</span>
+              <input type="text" id="search-student" placeholder="Search by name, ID, skills, or email...">
+            </div>
+
+            <select id="branch-filter" class="select-control">
+              <option value="">All Branches</option>
+              <option value="Computer Science">Computer Science</option>
+              <option value="Information Technology">Information Technology</option>
+              <option value="Electronics & Comm.">Electronics & Comm.</option>
+              <option value="Mechanical Eng.">Mechanical Eng.</option>
+            </select>
+
+            <select id="year-filter" class="select-control">
+              <option value="">All Years</option>
+              <option value="1">1st Year</option>
+              <option value="2">2nd Year</option>
+              <option value="3">3rd Year</option>
+              <option value="4">4th Year</option>
+            </select>
+
+            <select id="status-filter" class="select-control">
+              <option value="">All Statuses</option>
+              <option value="Eligible">Eligible</option>
+              <option value="Placed">Placed</option>
+              <option value="Not Eligible">Not Eligible</option>
+            </select>
+          </div>
+
+          <!-- View Switcher -->
+          <div class="view-switch">
+            <button id="btn-view-table" class="view-switch-btn active" title="Table View">
+              <span>📋</span> Table
+            </button>
+            <button id="btn-view-cards" class="view-switch-btn" title="Card Grid View">
+              <span>🗂️</span> Cards
+            </button>
+          </div>
+        </div>
+
+        <!-- Student Count Indicator -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <div style="font-size: 0.85rem; color: var(--text-secondary);">
+            Showing <strong id="student-count-badge" style="color: #fff;">0</strong> registered students
+          </div>
+        </div>
+
+        <!-- ================= VIEW 1: TABLE VIEW ================= -->
+        <div id="table-view-container" class="table-card">
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Student ID</th>
+                  <th>Student Profile</th>
+                  <th>Branch & Year</th>
+                  <th>CGPA</th>
+                  <th>Attendance</th>
+                  <th>Projects & Skills</th>
+                  <th>Backlogs</th>
+                  <th>Status</th>
+                  <th style="text-align: right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="students-tbody">
+                <tr>
+                  <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 2.5rem;">
+                    Loading student records from SQLite...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ================= VIEW 2: CARD GRID VIEW ================= -->
+        <div id="cards-view-container" class="students-cards-grid" style="display: none;">
+          <!-- Dynamically filled by students.js -->
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ================= ADD / EDIT STUDENT MODAL ================= -->
+  <div id="studentModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 680px; max-height: 90vh; overflow-y: auto;">
+      <div class="modal-header">
+        <h2 id="modalTitle">Add New Student Record</h2>
+        <button id="closeStudentModal" class="close-btn">&times;</button>
+      </div>
+
+      <form id="studentForm">
+        <!-- Hidden input to store editing ID -->
+        <input type="hidden" id="form-db-id" value="">
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="form-student-id">Student ID *</label>
+            <input type="text" id="form-student-id" required placeholder="e.g. STU2023025">
+          </div>
+
+          <div class="form-group">
+            <label for="form-name">Full Name *</label>
+            <input type="text" id="form-name" required placeholder="e.g. Rahul Sharma">
+          </div>
+
+          <div class="form-group full-width">
+            <label for="form-email">College Email *</label>
+            <input type="email" id="form-email" required placeholder="rahul.sharma@college.edu">
+          </div>
+
+          <div class="form-group">
+            <label for="form-branch">Branch / Department *</label>
+            <select id="form-branch" required>
+              <option value="Computer Science">Computer Science</option>
+              <option value="Information Technology">Information Technology</option>
+              <option value="Electronics & Comm.">Electronics & Comm.</option>
+              <option value="Mechanical Eng.">Mechanical Eng.</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="form-year">Academic Year (1 - 4) *</label>
+            <input type="number" id="form-year" min="1" max="4" value="3" required>
+          </div>
+
+          <div class="form-group">
+            <label for="form-cgpa">CGPA (0.0 to 10.0) *</label>
+            <input type="number" step="0.01" min="0" max="10" id="form-cgpa" value="8.0" required>
+          </div>
+
+          <div class="form-group">
+            <label for="form-attendance">Attendance % (0 to 100) *</label>
+            <input type="number" step="0.1" min="0" max="100" id="form-attendance" value="85.0" required>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="form-skills">Technical Skills (comma-separated)</label>
+            <input type="text" id="form-skills" placeholder="e.g. Python, SQL, React, Machine Learning">
+          </div>
+
+          <div class="form-group">
+            <label for="form-projects">Number of Projects (>= 0) *</label>
+            <input type="number" min="0" id="form-projects" value="2" required>
+          </div>
+
+          <div class="form-group">
+            <label for="form-certifications">Certifications (>= 0) *</label>
+            <input type="number" min="0" id="form-certifications" value="1" required>
+          </div>
+
+          <div class="form-group">
+            <label for="form-internship">Internship Experience</label>
+            <input type="text" id="form-internship" placeholder="e.g. Yes (Company) or No" value="No">
+          </div>
+
+          <div class="form-group">
+            <label for="form-backlogs">Active Backlogs (>= 0) *</label>
+            <input type="number" min="0" id="form-backlogs" value="0" required>
+          </div>
+
+          <div class="form-group">
+            <label for="form-github">GitHub Profile URL</label>
+            <input type="url" id="form-github" placeholder="https://github.com/username">
+          </div>
+
+          <div class="form-group">
+            <label for="form-portfolio">Portfolio Profile URL</label>
+            <input type="url" id="form-portfolio" placeholder="https://portfolio.dev">
+          </div>
+
+          <div class="form-group full-width">
+            <label for="form-status">Placement Status</label>
+            <select id="form-status">
+              <option value="Eligible">Eligible</option>
+              <option value="Placed">Placed</option>
+              <option value="Not Eligible">Not Eligible</option>
+              <option value="In Process">In Process</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.75rem; border-top: 1px solid var(--border-color); padding-top: 1.25rem;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal()">
+            Cancel
+          </button>
+          <button type="submit" id="submitBtn" class="btn btn-primary">
+            Save Student
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= VIEW DETAILS MODAL ================= -->
+  <div id="detailsModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 620px; max-height: 90vh; overflow-y: auto;">
+      <div class="modal-header">
+        <h2>Student Profile Details</h2>
+        <button id="closeDetailsModal" class="close-btn">&times;</button>
+      </div>
+
+      <div id="detailsModalContent">
+        <!-- Filled dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/students.js"></script>
+</body>
+</html>

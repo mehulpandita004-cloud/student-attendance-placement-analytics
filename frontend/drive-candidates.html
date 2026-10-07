@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Drive Candidate Screening Roster - EduAnalytics</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-icon">🎓</div>
+        <div class="logo-text">
+          EduAnalytics
+          <span>College Intelligence</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-label">Dashboards</div>
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span>1. Admin Dashboard</span>
+        </a>
+        <a href="student-dashboard.html" class="nav-item">
+          <span class="nav-icon">🎓</span>
+          <span>2. Student Portal</span>
+        </a>
+
+        <div class="nav-label" style="margin-top: 0.75rem;">Core Modules</div>
+        <a href="students.html" class="nav-item">
+          <span class="nav-icon">👥</span>
+          <span>3. Students</span>
+        </a>
+        <a href="attendance.html" class="nav-item">
+          <span class="nav-icon">📅</span>
+          <span>4. Attendance</span>
+        </a>
+        <a href="performance.html" class="nav-item">
+          <span class="nav-icon">📈</span>
+          <span>5. Performance</span>
+        </a>
+        <a href="placement.html" class="nav-item">
+          <span class="nav-icon">💼</span>
+          <span>6. Placement Drives</span>
+        </a>
+
+        <div class="nav-label" style="margin-top: 0.75rem;">Placement Screening</div>
+        <a href="eligibility.html" class="nav-item">
+          <span class="nav-icon">🎯</span>
+          <span>7. Eligibility Engine</span>
+        </a>
+        <a href="drive-candidates.html" class="nav-item active">
+          <span class="nav-icon">📋</span>
+          <span>8. Drive Candidates</span>
+        </a>
+
+        <div class="nav-label" style="margin-top: 0.75rem;">Intelligence & ML</div>
+        <a href="ml-dashboard.html" class="nav-item">
+          <span class="nav-icon">🤖</span>
+          <span>9. ML Predictions</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="system-status">
+          <div class="status-dot"></div>
+          <span>Candidate Screening Active</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="main-wrapper">
+      <header class="topbar">
+        <div class="topbar-title">
+          <h1>Company Drive Candidate Screening Roster</h1>
+          <p>Complete cohort screening matching all 7 placement criteria for a selected company recruitment drive</p>
+        </div>
+        <div class="topbar-actions">
+          <div id="backend-status-pill" class="api-pill">
+            <span class="status-dot"></span>
+            <span id="backend-status-text">Checking Backend...</span>
+          </div>
+          <a href="eligibility.html" class="btn btn-primary btn-sm">🎯 1-on-1 Eligibility Checker</a>
+        </div>
+      </header>
+
+      <div class="content-area">
+
+        <!-- ================= DRIVE SELECTOR & CRITERIA SUMMARY ================= -->
+        <div class="eligibility-header-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+            <div>
+              <label for="select-screening-drive" style="font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">
+                Select Placement Drive to Screen Candidates:
+              </label>
+              <div style="margin-top: 0.4rem;">
+                <select id="select-screening-drive" class="select-control" style="min-width: 320px; font-weight: 600;">
+                  <option value="">Loading recruitment drives...</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 0.5rem;">
+              <button id="btn-export-csv" class="btn btn-secondary btn-sm" onclick="exportEligibleCSV()">
+                📥 Export Eligible Roster (CSV)
+              </button>
+            </div>
+          </div>
+
+          <!-- Selected Drive Criteria Pill Strip -->
+          <div id="selected-drive-criteria-strip" style="background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem 1.25rem;">
+            Loading drive requirements...
+          </div>
+        </div>
+
+        <!-- ================= 4 KPI SUMMARY CHIPS ================= -->
+        <div class="metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 1.5rem;">
+          <div class="metric-card">
+            <div class="metric-info">
+              <h3>Total Evaluated</h3>
+              <div id="kpi-total-evaluated" class="metric-value">--</div>
+              <div class="metric-subtitle">Registered student cohort</div>
+            </div>
+            <div class="metric-icon-box icon-blue">👥</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-info">
+              <h3>Eligible Candidates</h3>
+              <div id="kpi-eligible-count" class="metric-value" style="color: #34d399;">--</div>
+              <div class="metric-subtitle">100% criteria satisfied</div>
+            </div>
+            <div class="metric-icon-box icon-emerald">✅</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-info">
+              <h3>Ineligible Students</h3>
+              <div id="kpi-ineligible-count" class="metric-value" style="color: #f87171;">--</div>
+              <div class="metric-subtitle">Failed 1 or more criteria</div>
+            </div>
+            <div class="metric-icon-box icon-rose">❌</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-info">
+              <h3>Eligibility Rate</h3>
+              <div id="kpi-eligibility-rate" class="metric-value" style="color: var(--accent-cyan);">--%</div>
+              <div class="metric-subtitle">Drive qualification ratio</div>
+            </div>
+            <div class="metric-icon-box icon-cyan">📈</div>
+          </div>
+        </div>
+
+        <!-- ================= CANDIDATE ROSTER TABLE CARD ================= -->
+        <div class="table-card">
+          <div class="card-header" style="flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <div class="card-title">📋 Student Candidate Eligibility Ledger</div>
+              <div class="card-subtitle">Showing compliance breakdown across all 7 placement rules</div>
+            </div>
+
+            <!-- Filter Tabs -->
+            <div class="filter-tabs" style="margin-bottom: 0;">
+              <button class="filter-tab-btn active" id="tab-all" onclick="filterCandidates('all')">
+                All Students (<span id="cnt-tab-all">0</span>)
+              </button>
+              <button class="filter-tab-btn" id="tab-eligible" onclick="filterCandidates('eligible')">
+                Eligible Only ✅ (<span id="cnt-tab-eligible">0</span>)
+              </button>
+              <button class="filter-tab-btn" id="tab-ineligible" onclick="filterCandidates('ineligible')">
+                Ineligible Only ❌ (<span id="cnt-tab-ineligible">0</span>)
+              </button>
+            </div>
+          </div>
+
+          <!-- Search filter within table -->
+          <div style="padding: 0.75rem 1.25rem; background: rgba(15, 23, 42, 0.4); border-bottom: 1px solid var(--border-color); display: flex; gap: 0.75rem;">
+            <input type="text" id="roster-search" class="input-control" placeholder="🔍 Search candidate by name, roll number, or department..." style="max-width: 400px;">
+          </div>
+
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Roll No</th>
+                  <th>Student Name</th>
+                  <th>Branch</th>
+                  <th>CGPA</th>
+                  <th>Att. %</th>
+                  <th>Projects</th>
+                  <th>Certs</th>
+                  <th>Internship</th>
+                  <th>Backlogs</th>
+                  <th>Status</th>
+                  <th>Compliance & Reasons</th>
+                  <th style="text-align: right;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="drive-candidates-tbody">
+                <tr>
+                  <td colspan="12" style="text-align: center; color: var(--text-muted); padding: 2.5rem;">
+                    Select a placement drive to load screening results...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Mandatory Selection Disclaimer Banner -->
+        <div class="disclaimer-banner" style="margin-top: 1.5rem;">
+          <div class="icon">⚠️</div>
+          <div>
+            <strong>Mandatory Corporate Recruitment Notice:</strong>
+            Eligibility confirms that a student satisfies the institutional cutoff thresholds for the drive.
+            Meeting eligibility criteria DOES NOT guarantee test clearance, interview shortlisting, or final selection/job offer by the company.
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Scorecard Modal -->
+  <div id="scorecardModal" class="modal">
+    <div class="modal-content" style="max-width: 720px;">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title" id="scorecard-modal-title">Candidate 7-Point Scorecard</h2>
+          <div style="font-size: 0.82rem; color: var(--text-secondary);" id="scorecard-modal-subtitle"></div>
+        </div>
+        <button id="closeScorecardModal" class="btn btn-secondary btn-sm">✕</button>
+      </div>
+
+      <div class="modal-body" id="scorecard-modal-body" style="padding: 1.25rem 0;">
+        Loading scorecard...
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/drive-candidates.js"></script>
+</body>
+</html>

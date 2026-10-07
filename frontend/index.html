@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Attendance, Performance & Placement Analytics</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    .hero-container {
+      max-width: 900px;
+      margin: 80px auto;
+      padding: 2.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      text-align: center;
+    }
+    .badge-pill {
+      display: inline-block;
+      padding: 0.35rem 1rem;
+      background: rgba(79, 70, 229, 0.2);
+      color: #a5b4fc;
+      border: 1px solid rgba(79, 70, 229, 0.4);
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+    .hero-title {
+      font-size: 2.25rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #fff 40%, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-desc {
+      color: var(--text-secondary);
+      font-size: 1.05rem;
+      margin-bottom: 2rem;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.25rem;
+      margin: 2.5rem 0;
+      text-align: left;
+    }
+    .feature-box {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border-color);
+      padding: 1.25rem;
+      border-radius: var(--radius-md);
+    }
+    .feature-box h4 {
+      font-size: 0.95rem;
+      color: #fff;
+      margin-bottom: 0.35rem;
+    }
+    .feature-box p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body style="background: radial-gradient(circle at top, #1e1b4b 0%, #0f172a 60%);">
+
+  <div class="hero-container">
+    <div class="badge-pill">College ML Project • Production Architecture</div>
+    <h1 class="hero-title">Student Attendance, Performance & Placement Analytics System</h1>
+    <p class="hero-desc">
+      A comprehensive data intelligence and academic tracking portal designed for colleges.
+      Connects student attendance, semester performances, and company placement eligibility in one place.
+    </p>
+
+    <div style="display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+      <a href="dashboard.html" class="btn btn-primary" style="padding: 0.75rem 1.5rem; font-size: 0.95rem;">
+        📊 Admin Dashboard →
+      </a>
+      <a href="student-dashboard.html" class="btn btn-secondary" style="padding: 0.75rem 1.5rem; font-size: 0.95rem; background: rgba(79, 70, 229, 0.25); border-color: #6366f1;">
+        🎓 Student Portal & Recommendations →
+      </a>
+      <a href="ml-dashboard.html" class="btn btn-secondary" style="padding: 0.75rem 1.5rem; font-size: 0.95rem;">
+        🤖 ML Intelligence →
+      </a>
+    </div>
+
+    <div class="feature-grid">
+      <div class="feature-box">
+        <h4>📊 Real-time Attendance Analytics</h4>
+        <p>Threshold alerts for students falling below the mandatory 75% attendance criteria.</p>
+      </div>
+      <div class="feature-box">
+        <h4>🎓 Academic Performance</h4>
+        <p>Semester CGPA tracking, backlog monitoring, and subject-wise score evaluation.</p>
+      </div>
+      <div class="feature-box">
+        <h4>💼 Placement Drives & Matching</h4>
+        <p>Automated company criteria screening (minimum CGPA, attendance, zero-backlog checks).</p>
+      </div>
+      <div class="feature-box">
+        <h4>🤖 Scikit-Learn ML Readiness</h4>
+        <p>Modular pipeline prepared for placement probability prediction and student counseling.</p>
+      </div>
+    </div>
+
+    <div style="font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 1.25rem;">
+      Tech Stack: Python FastAPI • SQLite Database • Vanilla JS & CSS • Chart.js Data Visualizations
+    </div>
+  </div>
+
+</body>
+</html>

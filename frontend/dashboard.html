@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Intelligence Dashboard - EduAnalytics</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-icon">🎓</div>
+        <div class="logo-text">
+          EduAnalytics
+          <span>College Intelligence</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-label">Dashboards</div>
+        <a href="dashboard.html" class="nav-item active">
+          <span class="nav-icon">📊</span>
+          <span>1. Admin Dashboard</span>
+        </a>
+        <a href="student-dashboard.html" class="nav-item">
+          <span class="nav-icon">🎓</span>
+          <span>2. Student Portal</span>
+        </a>
+
+        <div class="nav-label" style="margin-top: 0.75rem;">Core Modules</div>
+        <a href="students.html" class="nav-item">
+          <span class="nav-icon">👥</span>
+          <span>3. Students</span>
+        </a>
+        <a href="attendance.html" class="nav-item">
+          <span class="nav-icon">📅</span>
+          <span>4. Attendance</span>
+        </a>
+        <a href="performance.html" class="nav-item">
+          <span class="nav-icon">📈</span>
+          <span>5. Performance</span>
+        </a>
+        <a href="placement.html" class="nav-item">
+          <span class="nav-icon">💼</span>
+          <span>6. Placement Drives</span>
+        </a>
+
+        <div class="nav-label" style="margin-top: 0.75rem;">Placement Screening</div>
+        <a href="eligibility.html" class="nav-item">
+          <span class="nav-icon">🎯</span>
+          <span>7. Eligibility Engine</span>
+        </a>
+        <a href="drive-candidates.html" class="nav-item">
+          <span class="nav-icon">📋</span>
+          <span>8. Drive Candidates</span>
+        </a>
+
+        <div class="nav-label" style="margin-top: 0.75rem;">Intelligence & ML</div>
+        <a href="ml-dashboard.html" class="nav-item">
+          <span class="nav-icon">🤖</span>
+          <span>9. ML Predictions</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="system-status">
+          <div class="status-dot"></div>
+          <span>Admin Portal • SQLite DB</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="main-wrapper">
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="topbar-title">
+          <h1>College Administration Analytics Dashboard</h1>
+          <p>Real-Time Academic Performance, Defaulter Tracking & Placement Readiness Intelligence</p>
+        </div>
+        <div class="topbar-actions" style="display: flex; gap: 0.75rem; align-items: center;">
+          <div id="backend-status-pill" class="api-pill">
+            <span class="status-dot"></span>
+            <span id="backend-status-text">Checking Backend...</span>
+          </div>
+          <a href="student-dashboard.html" class="btn btn-secondary btn-sm" style="display: flex; align-items: center; gap: 0.35rem;">
+            🎓 Student Portal
+          </a>
+          <a href="students.html" class="btn btn-primary btn-sm">+ Add Student</a>
+        </div>
+      </header>
+
+      <!-- Content Area -->
+      <div class="content-area">
+
+        <!-- ================= 7 ADMIN METRIC CARDS ================= -->
+        <div class="metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); margin-bottom: 1.5rem;">
+          
+          <!-- 1. Total Students -->
+          <div class="metric-card">
+            <div class="metric-info">
+              <h3>Total Students</h3>
+              <div id="stat-total-students" class="metric-value">--</div>
+              <div class="metric-subtitle">Enrolled cohorts</div>
+            </div>
+            <div class="metric-icon-box icon-blue">👥</div>
+          </div>
+
+          <!-- 2. Average Attendance -->
+          <div class="metric-card" id="attendance-section">
+            <div class="metric-info">
+              <h3>Average Attendance</h3>
+              <div id="stat-avg-attendance" class="metric-value">--%</div>
+              <div class="metric-subtitle">Across all lectures</div>
+            </div>
+            <div class="metric-icon-box icon-cyan">📅</div>
+          </div>
+
+          <!-- 3. Students Below 75% -->
+          <div class="metric-card">
+            <div class="metric-info">
+              <h3>Students Below 75%</h3>
+              <div id="stat-students-below-75" class="metric-value" style="color: var(--accent-rose);">--</div>
+              <div class="metric-subtitle">Statutory detention risk</div>
+            </div>
+            <div class="metric-icon-box icon-rose">⚠️</div>
+          </div>
+
+          <!-- 4. Average CGPA -->
+          <div class="metric-card" id="performance-section">
+            <div class="metric-info">
+              <h3>Average CGPA</h3>
+              <div id="stat-avg-cgpa" class="metric-value" style="color: var(--accent-emerald);">--</div>
+              <div class="metric-subtitle">Scale 10.0 grading</div>
+            </div>
+            <div class="metric-icon-box icon-emerald">⭐</div>
+          </div>
+
+          <!-- 5. Placement Drives -->
+          <div class="metric-card">
+            <div class="metric-info">
+              <h3>Placement Drives</h3>
+              <div id="stat-placement-drives" class="metric-value" style="color: var(--accent-cyan);">--</div>
+              <div class="metric-subtitle">Active campus drives</div>
+            </div>
+            <div class="metric-icon-box icon-cyan">💼</div>
+          </div>
+
+          <!-- 6. Eligible Students -->
+          <div class="metric-card">
+            <div class="metric-info">
+              <h3>Eligible Students</h3>
+              <div id="stat-eligible-students" class="metric-value" style="color: var(--accent-amber);">--</div>
+              <div class="metric-subtitle">Cleared drive criteria</div>
+            </div>
+            <div class="metric-icon-box icon-amber">🎯</div>
+          </div>
+
+          <!-- 7. ML Readiness Distribution KPI -->
+          <div class="metric-card" style="grid-column: span 1;">
+            <div class="metric-info">
+              <h3>ML Readiness Split</h3>
+              <div id="stat-readiness-split" class="metric-value" style="font-size: 1.15rem; display: flex; gap: 0.4rem; align-items: baseline; margin-top: 0.2rem;">
+                <span id="readiness-high-cnt" style="color: var(--accent-emerald);">H: --</span>
+                <span style="color: var(--text-muted); font-size: 0.9rem;">|</span>
+                <span id="readiness-med-cnt" style="color: var(--accent-amber);">M: --</span>
+                <span style="color: var(--text-muted); font-size: 0.9rem;">|</span>
+                <span id="readiness-low-cnt" style="color: var(--accent-rose);">L: --</span>
+              </div>
+              <div class="metric-subtitle">High / Med / Low ML Tiers</div>
+            </div>
+            <div class="metric-icon-box icon-blue">🤖</div>
+          </div>
+
+        </div>
+
+        <!-- ================= CHARTS GRID (CHART.JS) ================= -->
+        <div class="charts-grid" style="margin-bottom: 1.5rem;">
+          
+          <!-- Chart 1: Attendance Distribution -->
+          <div class="chart-card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">🕒 Attendance Compliance Distribution</div>
+                <div class="card-subtitle">Critical (&lt;75%) vs Moderate (75-85%) vs Good (&gt;85%)</div>
+              </div>
+            </div>
+            <div class="chart-container" style="height: 250px;">
+              <canvas id="attendanceChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Chart 2: ML Placement Readiness Distribution -->
+          <div class="chart-card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">🤖 ML Placement Readiness Breakdown</div>
+                <div class="card-subtitle">Scikit-Learn Classification (High vs Medium vs Low Readiness)</div>
+              </div>
+            </div>
+            <div class="chart-container" style="height: 250px;">
+              <canvas id="readinessChart"></canvas>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ================= SECONDARY CHARTS GRID ================= -->
+        <div class="charts-grid" style="grid-template-columns: 1.3fr 1fr; margin-bottom: 1.5rem;">
+          
+          <!-- Chart 3: Department Comparison -->
+          <div class="chart-card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">📊 Department Academic & Attendance Comparison</div>
+                <div class="card-subtitle">Cross-department benchmark (Average CGPA vs Average Attendance)</div>
+              </div>
+            </div>
+            <div class="chart-container" style="height: 260px;">
+              <canvas id="departmentChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Chart 4: Placement Drive Candidate Eligibility Breakdown -->
+          <div class="chart-card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">🎯 Placement Drives Eligibility Audit</div>
+                <div class="card-subtitle">Eligible vs Ineligible candidates per recruitment drive</div>
+              </div>
+            </div>
+            <div class="chart-container" style="height: 260px;">
+              <canvas id="driveEligibilityChart"></canvas>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ================= AT-RISK STUDENTS INTERVENTION TABLE ================= -->
+        <div class="table-card" style="margin-bottom: 0;">
+          <div class="card-header">
+            <div>
+              <div class="card-title" style="color: #f87171;">⚠️ Immediate Intervention Alert (&lt;75% Attendance or Active Backlogs)</div>
+              <div class="card-subtitle">Students requiring administrative counseling and personalized improvement plans</div>
+            </div>
+            <span class="badge-tag" style="background: rgba(239, 68, 68, 0.15); color: #fca5a5; border-color: rgba(239, 68, 68, 0.3);">
+              Action Required
+            </span>
+          </div>
+          
+          <div style="overflow-x: auto;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Roll Number</th>
+                  <th>Student Name</th>
+                  <th>Department</th>
+                  <th>Attendance</th>
+                  <th>CGPA</th>
+                  <th>Backlogs</th>
+                  <th>Primary Risk Factor</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="at-risk-tbody">
+                <tr>
+                  <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading defaulter records...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

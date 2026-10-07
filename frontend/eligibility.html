@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Placement Eligibility Engine - EduAnalytics</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-icon">🎓</div>
+        <div class="logo-text">
+          EduAnalytics
+          <span>College Intelligence</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-label">Dashboards</div>
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span>1. Admin Dashboard</span>
+        </a>
+        <a href="student-dashboard.html" class="nav-item">
+          <span class="nav-icon">🎓</span>
+          <span>2. Student Portal</span>
+        </a>
+
+        <div class="nav-label" style="margin-top: 0.75rem;">Core Modules</div>
+        <a href="students.html" class="nav-item">
+          <span class="nav-icon">👥</span>
+          <span>3. Students</span>
+        </a>
+        <a href="attendance.html" class="nav-item">
+          <span class="nav-icon">📅</span>
+          <span>4. Attendance</span>
+        </a>
+        <a href="performance.html" class="nav-item">
+          <span class="nav-icon">📈</span>
+          <span>5. Performance</span>
+        </a>
+        <a href="placement.html" class="nav-item">
+          <span class="nav-icon">💼</span>
+          <span>6. Placement Drives</span>
+        </a>
+
+        <div class="nav-label" style="margin-top: 0.75rem;">Placement Screening</div>
+        <a href="eligibility.html" class="nav-item active">
+          <span class="nav-icon">🎯</span>
+          <span>7. Eligibility Engine</span>
+        </a>
+        <a href="drive-candidates.html" class="nav-item">
+          <span class="nav-icon">📋</span>
+          <span>8. Drive Candidates</span>
+        </a>
+
+        <div class="nav-label" style="margin-top: 0.75rem;">Intelligence & ML</div>
+        <a href="ml-dashboard.html" class="nav-item">
+          <span class="nav-icon">🤖</span>
+          <span>9. ML Predictions</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="system-status">
+          <div class="status-dot"></div>
+          <span>Eligibility Engine Active</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="main-wrapper">
+      <header class="topbar">
+        <div class="topbar-title">
+          <h1>Placement Eligibility Engine</h1>
+          <p>Automated 7-point criteria verification: CGPA, Attendance, Skills, Projects, Certifications, Internship & Backlogs</p>
+        </div>
+        <div class="topbar-actions">
+          <div id="backend-status-pill" class="api-pill">
+            <span class="status-dot"></span>
+            <span id="backend-status-text">Checking Backend...</span>
+          </div>
+          <a href="drive-candidates.html" class="btn btn-secondary btn-sm">👥 Drive Roster View</a>
+        </div>
+      </header>
+
+      <div class="content-area">
+
+        <!-- ================= SELECTION FORM ================= -->
+        <div class="eligibility-header-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.5rem;">
+            <div>
+              <h2 style="font-size: 1.15rem; font-weight: 700; color: #fff;">1-on-1 Student vs. Drive Screening</h2>
+              <p style="font-size: 0.85rem; color: var(--text-secondary);">Select any registered candidate and an active recruitment drive to evaluate real-time eligibility.</p>
+            </div>
+            <button id="btn-run-evaluation" class="btn btn-primary btn-sm">
+              ⚡ Evaluate Eligibility
+            </button>
+          </div>
+
+          <div class="selector-grid">
+            <!-- Student Selector -->
+            <div class="selector-box">
+              <label for="select-student">Select Student Candidate</label>
+              <select id="select-student" class="select-control" style="width: 100%; margin-bottom: 0.85rem;">
+                <option value="">Loading students...</option>
+              </select>
+
+              <!-- Live Student Mini-Card -->
+              <div id="student-preview" style="background: rgba(30, 41, 59, 0.6); padding: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+                <div style="font-size: 0.8rem; color: var(--text-muted); text-align: center;">Select a student to view academic profile</div>
+              </div>
+            </div>
+
+            <!-- Placement Drive Selector -->
+            <div class="selector-box">
+              <label for="select-drive">Select Placement Drive</label>
+              <select id="select-drive" class="select-control" style="width: 100%; margin-bottom: 0.85rem;">
+                <option value="">Loading placement drives...</option>
+              </select>
+
+              <!-- Live Drive Mini-Card -->
+              <div id="drive-preview" style="background: rgba(30, 41, 59, 0.6); padding: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+                <div style="font-size: 0.8rem; color: var(--text-muted); text-align: center;">Select a drive to view criteria thresholds</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= EVALUATION RESULT CONTAINER ================= -->
+        <div id="evaluation-loading" style="display: none; text-align: center; padding: 3rem; color: var(--text-secondary);">
+          <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚙️</div>
+          <div>Evaluating student credentials against drive criteria...</div>
+        </div>
+
+        <div id="evaluation-result" style="display: none;">
+          <!-- Result Card (injected dynamically) -->
+          <div id="result-card-container"></div>
+        </div>
+
+        <!-- Empty state placeholder before initial evaluation -->
+        <div id="evaluation-placeholder" style="text-align: center; padding: 4rem 2rem; background: rgba(30, 41, 59, 0.4); border-radius: var(--radius-lg); border: 1px dashed var(--border-color);">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">🎯</div>
+          <h3 style="color: #fff; margin-bottom: 0.5rem;">Select a Student & Placement Drive</h3>
+          <p style="color: var(--text-secondary); max-width: 550px; margin: 0 auto 1.5rem;">
+            The engine will inspect all 7 criteria (CGPA, Attendance %, Required Skills, Projects, Certifications, Internship, Backlogs) and provide an itemized compliance breakdown.
+          </p>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Student All-Drives Modal -->
+  <div id="allDrivesModal" class="modal">
+    <div class="modal-content" style="max-width: 800px;">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title" id="all-drives-modal-title">Student Placement Readiness Across All Drives</h2>
+          <div style="font-size: 0.82rem; color: var(--text-secondary);" id="all-drives-modal-subtitle"></div>
+        </div>
+        <button id="closeAllDrivesModal" class="btn btn-secondary btn-sm">✕</button>
+      </div>
+
+      <div class="modal-body" id="all-drives-modal-body" style="padding: 1.25rem 0;">
+        Loading drive evaluations...
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/eligibility.js"></script>
+</body>
+</html>

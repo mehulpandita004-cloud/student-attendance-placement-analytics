@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ML Predictive Intelligence Dashboard - EduAnalytics</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Chart.js CDN for visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-icon">🎓</div>
+        <div class="logo-text">
+          EduAnalytics
+          <span>College Intelligence</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-label">Dashboards</div>
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span>1. Admin Dashboard</span>
+        </a>
+        <a href="student-dashboard.html" class="nav-item">
+          <span class="nav-icon">🎓</span>
+          <span>2. Student Portal</span>
+        </a>
+
+        <div class="nav-label" style="margin-top: 0.75rem;">Core Modules</div>
+        <a href="students.html" class="nav-item">
+          <span class="nav-icon">👥</span>
+          <span>3. Students</span>
+        </a>
+        <a href="attendance.html" class="nav-item">
+          <span class="nav-icon">📅</span>
+          <span>4. Attendance</span>
+        </a>
+        <a href="performance.html" class="nav-item">
+          <span class="nav-icon">📈</span>
+          <span>5. Performance</span>
+        </a>
+        <a href="placement.html" class="nav-item">
+          <span class="nav-icon">💼</span>
+          <span>6. Placement Drives</span>
+        </a>
+
+        <div class="nav-label" style="margin-top: 0.75rem;">Placement Screening</div>
+        <a href="eligibility.html" class="nav-item">
+          <span class="nav-icon">🎯</span>
+          <span>7. Eligibility Engine</span>
+        </a>
+        <a href="drive-candidates.html" class="nav-item">
+          <span class="nav-icon">📋</span>
+          <span>8. Drive Candidates</span>
+        </a>
+
+        <div class="nav-label" style="margin-top: 0.75rem;">Intelligence & ML</div>
+        <a href="ml-dashboard.html" class="nav-item active">
+          <span class="nav-icon">🤖</span>
+          <span>9. ML Predictions</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="system-status">
+          <div class="status-dot"></div>
+          <span>Scikit-Learn • ML Models Live</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="main-wrapper">
+      <header class="topbar">
+        <div class="topbar-title">
+          <h1>Machine Learning Predictive Intelligence</h1>
+          <p>Supervised Classification with Scikit-learn: Attendance Defaulter Risk & Placement Readiness Models</p>
+        </div>
+        <div class="topbar-actions">
+          <div id="backend-status-pill" class="api-pill">
+            <span class="status-dot"></span>
+            <span id="backend-status-text">Checking Backend...</span>
+          </div>
+          <button id="btn-refresh-metrics" class="btn btn-secondary btn-sm" onclick="loadMLDashboardData()">
+            🔄 Refresh Metrics
+          </button>
+        </div>
+      </header>
+
+      <div class="content-area">
+
+        <!-- ================= TOP KPI SUMMARY CARDS ================= -->
+        <div class="metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); margin-bottom: 1.5rem;">
+          <div class="metric-card">
+            <div class="metric-info">
+              <h3>Live Predictions</h3>
+              <div id="stat-predictions-count" class="metric-value" style="color: var(--accent-cyan);">--</div>
+              <div class="metric-subtitle">Total API inference calls</div>
+            </div>
+            <div class="metric-icon-box icon-cyan">⚡</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-info">
+              <h3>Attendance Model F1</h3>
+              <div id="stat-att-f1" class="metric-value" style="color: #34d399;">--%</div>
+              <div id="stat-att-model-name" class="metric-subtitle">Evaluating...</div>
+            </div>
+            <div class="metric-icon-box icon-emerald">📅</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-info">
+              <h3>Placement Model F1</h3>
+              <div id="stat-place-f1" class="metric-value" style="color: #34d399;">--%</div>
+              <div id="stat-place-model-name" class="metric-subtitle">Evaluating...</div>
+            </div>
+            <div class="metric-icon-box icon-blue">💼</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-info">
+              <h3>Training Dataset</h3>
+              <div class="metric-value" style="color: #fff;">1,300</div>
+              <div class="metric-subtitle">80/20 Stratified Split</div>
+            </div>
+            <div class="metric-icon-box icon-amber">📚</div>
+          </div>
+        </div>
+
+        <!-- ================= DASHBOARD NAVIGATION TABS ================= -->
+        <div class="filter-tabs" style="margin-bottom: 1.75rem;">
+          <button class="filter-tab-btn active" id="tab-btn-att" onclick="switchMLTab('att')">
+            📅 1. Attendance Risk Model
+          </button>
+          <button class="filter-tab-btn" id="tab-btn-place" onclick="switchMLTab('place')">
+            💼 2. Placement Readiness Model
+          </button>
+          <button class="filter-tab-btn" id="tab-btn-sandbox" onclick="switchMLTab('sandbox')">
+            ⚡ 3. Live Student Prediction Sandbox
+          </button>
+          <button class="filter-tab-btn" id="tab-btn-viva" onclick="switchMLTab('viva')">
+            🎓 4. College Viva Q&A Guide
+          </button>
+        </div>
+
+        <!-- ================= TAB 1: ATTENDANCE RISK MODEL ================= -->
+        <div id="tab-content-att" class="ml-tab-content">
+          <div class="eligibility-header-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem;">
+              <div>
+                <h2 style="font-size: 1.15rem; color: #fff;">Attendance Risk Prediction Pipeline</h2>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">
+                  Multi-class classification predicting student risk tiers: <strong>High</strong> (&lt;75% risk), <strong>Medium</strong> (75-84%), <strong>Low</strong> (&ge;85%).
+                </p>
+              </div>
+              <span id="badge-best-att" class="pill-sm pill-eligible">
+                🏆 Best: Evaluating...
+              </span>
+            </div>
+
+            <!-- Model Metrics 4-Pack -->
+            <div class="metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-top: 1rem;">
+              <div style="background: rgba(15, 23, 42, 0.7); padding: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+                <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Accuracy</div>
+                <div id="att-metric-acc" style="font-size: 1.4rem; font-weight: 800; color: #fff;">--%</div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary);">Test set accuracy</div>
+              </div>
+              <div style="background: rgba(15, 23, 42, 0.7); padding: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+                <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Macro Precision</div>
+                <div id="att-metric-prec" style="font-size: 1.4rem; font-weight: 800; color: var(--accent-cyan);">--%</div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary);">Unweighted class precision</div>
+              </div>
+              <div style="background: rgba(15, 23, 42, 0.7); padding: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+                <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Macro Recall</div>
+                <div id="att-metric-rec" style="font-size: 1.4rem; font-weight: 800; color: var(--accent-emerald);">--%</div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary);">Sensitivity across tiers</div>
+              </div>
+              <div style="background: rgba(15, 23, 42, 0.7); padding: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+                <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Macro F1-Score</div>
+                <div id="att-metric-f1" style="font-size: 1.4rem; font-weight: 800; color: var(--accent-amber);">--%</div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary);">Harmonic mean balance</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Algorithm Comparison Table -->
+          <div class="table-card" style="margin-bottom: 2rem;">
+            <div class="card-header">
+              <div>
+                <div class="card-title">🔬 Algorithm Benchmarking & Model Selection</div>
+                <div class="card-subtitle">Comparing Logistic Regression, Decision Tree, and Random Forest on identical test split</div>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Algorithm</th>
+                    <th>Test Accuracy</th>
+                    <th>Macro Precision</th>
+                    <th>Macro Recall</th>
+                    <th>Macro F1-Score</th>
+                    <th>Weighted F1</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="att-comparison-tbody">
+                  <tr><td colspan="7" style="text-align: center; padding: 1.5rem; color: var(--text-muted);">Loading benchmark results...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Confusion Matrix & Class Breakdown -->
+          <div class="charts-grid">
+            <div class="chart-card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">🧮 3x3 Confusion Matrix (Attendance Risk)</div>
+                  <div class="card-subtitle">Diagonal cells represent correct classifications</div>
+                </div>
+              </div>
+              <div id="att-cm-container" style="display: flex; justify-content: center; align-items: center; min-height: 240px;">
+                Loading matrix...
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">📊 Per-Class F1-Score Breakdown</div>
+                  <div class="card-subtitle">Performance breakdown across High, Medium, and Low risk cohorts</div>
+                </div>
+              </div>
+              <div class="chart-container" style="height: 240px;">
+                <canvas id="attClassChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= TAB 2: PLACEMENT READINESS MODEL ================= -->
+        <div id="tab-content-place" class="ml-tab-content" style="display: none;">
+          <div class="eligibility-header-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem;">
+              <div>
+                <h2 style="font-size: 1.15rem; color: #fff;">Placement Readiness Prediction Pipeline</h2>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">
+                  Multi-class model classifying students into <strong>High Readiness</strong>, <strong>Medium Readiness</strong>, and <strong>Low Readiness</strong>.
+                </p>
+              </div>
+              <span id="badge-best-place" class="pill-sm pill-eligible">
+                🏆 Best: Evaluating...
+              </span>
+            </div>
+
+            <!-- Model Metrics 4-Pack -->
+            <div class="metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-top: 1rem;">
+              <div style="background: rgba(15, 23, 42, 0.7); padding: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+                <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Accuracy</div>
+                <div id="place-metric-acc" style="font-size: 1.4rem; font-weight: 800; color: #fff;">--%</div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary);">Test set accuracy</div>
+              </div>
+              <div style="background: rgba(15, 23, 42, 0.7); padding: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+                <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Macro Precision</div>
+                <div id="place-metric-prec" style="font-size: 1.4rem; font-weight: 800; color: var(--accent-cyan);">--%</div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary);">Unweighted class precision</div>
+              </div>
+              <div style="background: rgba(15, 23, 42, 0.7); padding: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+                <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Macro Recall</div>
+                <div id="place-metric-rec" style="font-size: 1.4rem; font-weight: 800; color: var(--accent-emerald);">--%</div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary);">Sensitivity across tiers</div>
+              </div>
+              <div style="background: rgba(15, 23, 42, 0.7); padding: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+                <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Macro F1-Score</div>
+                <div id="place-metric-f1" style="font-size: 1.4rem; font-weight: 800; color: var(--accent-amber);">--%</div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary);">Harmonic mean balance</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Algorithm Comparison Table -->
+          <div class="table-card" style="margin-bottom: 2rem;">
+            <div class="card-header">
+              <div>
+                <div class="card-title">🔬 Algorithm Benchmarking & Model Selection</div>
+                <div class="card-subtitle">Evaluating Logistic Regression, Decision Tree, and Random Forest on test dataset</div>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Algorithm</th>
+                    <th>Test Accuracy</th>
+                    <th>Macro Precision</th>
+                    <th>Macro Recall</th>
+                    <th>Macro F1-Score</th>
+                    <th>Weighted F1</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="place-comparison-tbody">
+                  <tr><td colspan="7" style="text-align: center; padding: 1.5rem; color: var(--text-muted);">Loading benchmark results...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Confusion Matrix & Class Breakdown -->
+          <div class="charts-grid">
+            <div class="chart-card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">🧮 3x3 Confusion Matrix (Placement Readiness)</div>
+                  <div class="card-subtitle">Correct predictions highlighted on the diagonal</div>
+                </div>
+              </div>
+              <div id="place-cm-container" style="display: flex; justify-content: center; align-items: center; min-height: 240px;">
+                Loading matrix...
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">📊 Per-Tier Readiness Precision vs. Recall</div>
+                  <div class="card-subtitle">Comparative classification performance per tier</div>
+                </div>
+              </div>
+              <div class="chart-container" style="height: 240px;">
+                <canvas id="placeClassChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= TAB 3: LIVE STUDENT PREDICTION SANDBOX ================= -->
+        <div id="tab-content-sandbox" class="ml-tab-content" style="display: none;">
+          <div class="eligibility-header-card">
+            <div style="margin-bottom: 1rem;">
+              <h2 style="font-size: 1.15rem; color: #fff;">Interactive ML Prediction Sandbox</h2>
+              <p style="font-size: 0.85rem; color: var(--text-secondary);">
+                Select an enrolled student from the SQLite database to auto-populate features, or tune any parameter manually for live inference.
+              </p>
+            </div>
+
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+              <label for="sandbox-student-select" style="font-size: 0.85rem; font-weight: 700; color: var(--text-secondary);">
+                Auto-fill Student Profile:
+              </label>
+              <select id="sandbox-student-select" class="select-control" style="min-width: 320px; font-weight: 600;">
+                <option value="">-- Choose Registered Student --</option>
+              </select>
+              <button class="btn btn-primary btn-sm" onclick="runComprehensivePrediction()">
+                ⚡ Run Live Dual Prediction
+              </button>
+            </div>
+          </div>
+
+          <div class="selector-grid" style="margin-bottom: 2rem;">
+            <!-- Attendance Input Card -->
+            <div class="selector-box">
+              <div style="font-weight: 700; color: #fff; font-size: 0.95rem; margin-bottom: 0.85rem;">
+                📅 Attendance Risk Model Inputs
+              </div>
+              
+              <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                <div class="form-group">
+                  <label for="input-att-total">Total Classes Conducted</label>
+                  <input type="number" id="input-att-total" class="input-control" value="60" min="1">
+                </div>
+                <div class="form-group">
+                  <label for="input-att-attended">Classes Attended</label>
+                  <input type="number" id="input-att-attended" class="input-control" value="48" min="0">
+                </div>
+                <div class="form-group">
+                  <label for="input-att-prev">Previous Semester Attendance %</label>
+                  <input type="number" step="0.1" id="input-att-prev" class="input-control" value="82.0" min="0" max="100">
+                </div>
+                <div class="form-group">
+                  <label for="input-att-recent">Recent 4-Weeks Attendance %</label>
+                  <input type="number" step="0.1" id="input-att-recent" class="input-control" value="78.0" min="0" max="100">
+                </div>
+              </div>
+
+              <button class="btn btn-secondary btn-sm" style="width: 100%; margin-top: 1rem; justify-content: center;" onclick="runAttendancePredictionOnly()">
+                Predict Attendance Risk Only
+              </button>
+            </div>
+
+            <!-- Placement Input Card -->
+            <div class="selector-box">
+              <div style="font-weight: 700; color: #fff; font-size: 0.95rem; margin-bottom: 0.85rem;">
+                💼 Placement Readiness Model Inputs
+              </div>
+
+              <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                <div class="form-group">
+                  <label for="input-place-cgpa">Cumulative CGPA</label>
+                  <input type="number" step="0.05" id="input-place-cgpa" class="input-control" value="8.10" min="0" max="10">
+                </div>
+                <div class="form-group">
+                  <label for="input-place-att">Attendance %</label>
+                  <input type="number" step="0.1" id="input-place-att" class="input-control" value="80.0" min="0" max="100">
+                </div>
+                <div class="form-group">
+                  <label for="input-place-projects">Projects Completed</label>
+                  <input type="number" id="input-place-projects" class="input-control" value="3" min="0">
+                </div>
+                <div class="form-group">
+                  <label for="input-place-certs">Certifications</label>
+                  <input type="number" id="input-place-certs" class="input-control" value="2" min="0">
+                </div>
+                <div class="form-group">
+                  <label for="input-place-intern">Internship Completed?</label>
+                  <select id="input-place-intern" class="select-control">
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="input-place-skills">Technical Skills Count</label>
+                  <input type="number" id="input-place-skills" class="input-control" value="5" min="0">
+                </div>
+                <div class="form-group">
+                  <label for="input-place-backlogs">Active Backlogs</label>
+                  <input type="number" id="input-place-backlogs" class="input-control" value="0" min="0">
+                </div>
+                <div class="form-group">
+                  <label for="input-place-profiles">GitHub & Portfolio Presence</label>
+                  <select id="input-place-profiles" class="select-control">
+                    <option value="2">Both GitHub & Portfolio Verified</option>
+                    <option value="1">Either GitHub or Portfolio Only</option>
+                    <option value="0">None Available</option>
+                  </select>
+                </div>
+              </div>
+
+              <button class="btn btn-secondary btn-sm" style="width: 100%; margin-top: 1rem; justify-content: center;" onclick="runPlacementPredictionOnly()">
+                Predict Placement Readiness Only
+              </button>
+            </div>
+          </div>
+
+          <!-- Prediction Output Cards Grid -->
+          <div class="selector-grid">
+            <!-- Output: Attendance Risk -->
+            <div id="output-att-card" class="result-card" style="margin-bottom: 0; background: rgba(30, 41, 59, 0.7); border: 1px solid var(--border-color);">
+              <div style="font-size: 0.82rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 700;">
+                Attendance Risk Output
+              </div>
+              <div id="output-att-tier" style="font-size: 1.5rem; font-weight: 800; color: #fff; margin: 0.5rem 0;">
+                Awaiting Prediction...
+              </div>
+              <div id="output-att-confidence" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                Confidence: --%
+              </div>
+
+              <!-- Probability Bars Container -->
+              <div id="output-att-probs"></div>
+
+              <!-- Key Factors -->
+              <div id="output-att-factors" style="margin-top: 1rem; font-size: 0.82rem; color: var(--text-secondary);"></div>
+            </div>
+
+            <!-- Output: Placement Readiness -->
+            <div id="output-place-card" class="result-card" style="margin-bottom: 0; background: rgba(30, 41, 59, 0.7); border: 1px solid var(--border-color);">
+              <div style="font-size: 0.82rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 700;">
+                Placement Readiness Output
+              </div>
+              <div id="output-place-tier" style="font-size: 1.5rem; font-weight: 800; color: #fff; margin: 0.5rem 0;">
+                Awaiting Prediction...
+              </div>
+              <div id="output-place-confidence" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                Confidence: --%
+              </div>
+
+              <!-- Probability Bars Container -->
+              <div id="output-place-probs"></div>
+
+              <!-- Key Factors -->
+              <div id="output-place-factors" style="margin-top: 1rem; font-size: 0.82rem; color: var(--text-secondary);"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= TAB 4: COLLEGE VIVA Q&A GUIDE ================= -->
+        <div id="tab-content-viva" class="ml-tab-content" style="display: none;">
+          <div class="eligibility-header-card">
+            <h2 style="font-size: 1.15rem; color: #fff; margin-bottom: 0.35rem;">College Viva Examiner Defense Cheatsheet</h2>
+            <p style="font-size: 0.85rem; color: var(--text-secondary);">
+              Clear, technically sound explanations prepared for viva defense regarding algorithms, metrics, and methodology.
+            </p>
+          </div>
+
+          <div class="viva-box">
+            <div class="viva-question">
+              <span>🎯</span>
+              <span>Q1: Why did you compare Logistic Regression, Decision Tree, and Random Forest?</span>
+            </div>
+            <div class="viva-answer">
+              <strong>Answer:</strong> We wanted to benchmark a <em>linear parametric model</em> (Logistic Regression) against an <em>interpretable tree model</em> (Decision Tree) and an <em>ensemble bagging model</em> (Random Forest). Logistic Regression provides baseline calibrated probabilities, while Random Forest reduces variance and captures complex interactions (e.g., how Backlogs interact with CGPA) without overfitting.
+            </div>
+          </div>
+
+          <div class="viva-box">
+            <div class="viva-question">
+              <span>🎯</span>
+              <span>Q2: Why is F1-score more important than simple Accuracy for student defaulter classification?</span>
+            </div>
+            <div class="viva-answer">
+              <strong>Answer:</strong> Accuracy is deceptive in imbalanced cohorts. If 80% of students attend regularly, a naive classifier predicting everyone as 'Low Risk' achieves 80% accuracy while failing 100% of at-risk defaulters. <strong>Macro F1-score</strong> calculates the harmonic mean of precision and recall equally across all classes, penalizing models that overlook minority at-risk cohorts.
+            </div>
+          </div>
+
+          <div class="viva-box">
+            <div class="viva-question">
+              <span>🎯</span>
+              <span>Q3: What does the Confusion Matrix tell us in this system?</span>
+            </div>
+            <div class="viva-answer">
+              <strong>Answer:</strong> The rows represent actual ground truth student classes, while columns represent model predictions. Values along the diagonal (top-left to bottom-right) are <strong>True Positives</strong>. Off-diagonal cells reveal error types: False Positives (over-flagging a safe student) versus False Negatives (missing a true defaulter, which is academically dangerous).
+            </div>
+          </div>
+
+          <div class="viva-box">
+            <div class="viva-question">
+              <span>🎯</span>
+              <span>Q4: Why use joblib for model serialization instead of Python pickle?</span>
+            </div>
+            <div class="viva-answer">
+              <strong>Answer:</strong> <code>joblib</code> is heavily optimized for scikit-learn models containing large NumPy numeric arrays (such as tree estimators and weight vectors), yielding faster serialization and lower memory consumption compared to vanilla <code>pickle</code>.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/ml-dashboard.js"></script>
+</body>
+</html>

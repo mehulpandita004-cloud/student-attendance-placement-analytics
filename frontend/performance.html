@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Performance Analytics - Student Analytics System</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-icon">🎓</div>
+        <div class="logo-text">
+          EduAnalytics
+          <span>College Intelligence</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-label">Dashboards</div>
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span>1. Admin Dashboard</span>
+        </a>
+        <a href="student-dashboard.html" class="nav-item">
+          <span class="nav-icon">🎓</span>
+          <span>2. Student Portal</span>
+        </a>
+
+        <div class="nav-label" style="margin-top: 0.75rem;">Core Modules</div>
+        <a href="students.html" class="nav-item">
+          <span class="nav-icon">👥</span>
+          <span>3. Students</span>
+        </a>
+        <a href="attendance.html" class="nav-item">
+          <span class="nav-icon">📅</span>
+          <span>4. Attendance</span>
+        </a>
+        <a href="performance.html" class="nav-item active">
+          <span class="nav-icon">📈</span>
+          <span>5. Performance</span>
+        </a>
+        <a href="placement.html" class="nav-item">
+          <span class="nav-icon">💼</span>
+          <span>6. Placement Drives</span>
+        </a>
+
+        <div class="nav-label" style="margin-top: 0.75rem;">Placement Screening</div>
+        <a href="eligibility.html" class="nav-item">
+          <span class="nav-icon">🎯</span>
+          <span>7. Eligibility Engine</span>
+        </a>
+        <a href="drive-candidates.html" class="nav-item">
+          <span class="nav-icon">📋</span>
+          <span>8. Drive Candidates</span>
+        </a>
+
+        <div class="nav-label" style="margin-top: 0.75rem;">Intelligence & ML</div>
+        <a href="ml-dashboard.html" class="nav-item">
+          <span class="nav-icon">🤖</span>
+          <span>9. ML Predictions</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="system-status">
+          <div class="status-dot"></div>
+          <span>Performance Analytics Engine</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="main-wrapper">
+      <header class="topbar">
+        <div class="topbar-title">
+          <h1>Student Performance & Skills Intelligence</h1>
+          <p>Holistic analysis of CGPA, technical skills, projects, certifications, internships, and profiles</p>
+        </div>
+        <div class="topbar-actions">
+          <div id="backend-status-pill" class="api-pill">
+            <span class="status-dot"></span>
+            <span id="backend-status-text">Checking Backend...</span>
+          </div>
+          <a href="profile.html" class="btn btn-primary btn-sm">👤 Student 360° Profile</a>
+        </div>
+      </header>
+
+      <div class="content-area">
+
+        <!-- Filters Bar -->
+        <div class="filter-bar">
+          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; flex: 1;">
+            <select id="perf-branch-filter" class="select-control">
+              <option value="">All Branches</option>
+              <option value="Computer Science">Computer Science</option>
+              <option value="Information Technology">Information Technology</option>
+              <option value="Electronics & Comm.">Electronics & Comm.</option>
+              <option value="Mechanical Eng.">Mechanical Eng.</option>
+            </select>
+
+            <select id="perf-year-filter" class="select-control">
+              <option value="">All Years</option>
+              <option value="1">1st Year</option>
+              <option value="2">2nd Year</option>
+              <option value="3">3rd Year</option>
+              <option value="4">4th Year</option>
+            </select>
+          </div>
+
+          <div style="font-size: 0.85rem; color: var(--text-muted);">
+            Analyzing <strong id="cohort-count" style="color: #fff;">--</strong> student profiles
+          </div>
+        </div>
+
+        <!-- ================= 7 CORE KPI METRIC CARDS ================= -->
+        <div class="metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));">
+          <!-- 1. CGPA -->
+          <div class="metric-card">
+            <div class="metric-info">
+              <h3>1. Cohort CGPA</h3>
+              <div id="kpi-avg-cgpa" class="metric-value">--</div>
+              <div id="kpi-cgpa-range" class="metric-subtitle">Range: -- to --</div>
+            </div>
+            <div class="metric-icon-box icon-cyan">⭐</div>
+          </div>
+
+          <!-- 2. Projects -->
+          <div class="metric-card">
+            <div class="metric-info">
+              <h3>2. Total Projects</h3>
+              <div id="kpi-total-projects" class="metric-value">--</div>
+              <div id="kpi-avg-projects" class="metric-subtitle">-- avg / student</div>
+            </div>
+            <div class="metric-icon-box icon-blue">💻</div>
+          </div>
+
+          <!-- 3. Certifications -->
+          <div class="metric-card">
+            <div class="metric-info">
+              <h3>3. Certifications</h3>
+              <div id="kpi-total-certs" class="metric-value">--</div>
+              <div id="kpi-avg-certs" class="metric-subtitle">-- avg / student</div>
+            </div>
+            <div class="metric-icon-box icon-emerald">📜</div>
+          </div>
+
+          <!-- 4. Top Skills -->
+          <div class="metric-card">
+            <div class="metric-info">
+              <h3>4. Unique Skills</h3>
+              <div id="kpi-unique-skills" class="metric-value">--</div>
+              <div id="kpi-top-skill" class="metric-subtitle">Top: --</div>
+            </div>
+            <div class="metric-icon-box icon-amber">⚡</div>
+          </div>
+
+          <!-- 5. Internship Rate -->
+          <div class="metric-card">
+            <div class="metric-info">
+              <h3>5. Internship Rate</h3>
+              <div id="kpi-internship-rate" class="metric-value">--%</div>
+              <div id="kpi-internship-count" class="metric-subtitle">-- students interned</div>
+            </div>
+            <div class="metric-icon-box icon-cyan">💼</div>
+          </div>
+
+          <!-- 6. Online Profiles (GitHub/Portfolio) -->
+          <div class="metric-card">
+            <div class="metric-info">
+              <h3>6. GitHub / Portfolio</h3>
+              <div id="kpi-profiles-presence" class="metric-value">--%</div>
+              <div id="kpi-profiles-count" class="metric-subtitle">-- with GitHub linked</div>
+            </div>
+            <div class="metric-icon-box icon-blue">🌐</div>
+          </div>
+
+          <!-- 7. Backlog Status -->
+          <div class="metric-card">
+            <div class="metric-info">
+              <h3>7. Clean Backlogs</h3>
+              <div id="kpi-clear-backlogs" class="metric-value">--%</div>
+              <div id="kpi-backlogs-count" class="metric-subtitle">-- students clear</div>
+            </div>
+            <div class="metric-icon-box icon-emerald">🛡️</div>
+          </div>
+        </div>
+
+        <!-- ================= VISUAL CHARTS SECTION ================= -->
+        <div class="charts-grid">
+          <!-- Chart 1: CGPA Distribution & Tiers -->
+          <div class="chart-card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">📊 CGPA Tier Distribution</div>
+                <div class="card-subtitle">Elite (≥9.0), Good (8.0-8.9), Average (7.0-7.9), Improvement (&lt;7.0)</div>
+              </div>
+            </div>
+            <div class="chart-container" style="height: 280px;">
+              <canvas id="cgpaTiersChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Chart 2: Top Technical Skills In-Demand -->
+          <div class="chart-card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">⚡ Top Technical Skills Frequency</div>
+                <div class="card-subtitle">Most frequently mastered technologies across students</div>
+              </div>
+            </div>
+            <div class="chart-container" style="height: 280px;">
+              <canvas id="skillsFrequencyChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Secondary Charts Grid -->
+        <div class="charts-grid">
+          <!-- Chart 3: Projects vs Certifications by Branch -->
+          <div class="chart-card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">🛠️ Projects & Certifications by Department</div>
+                <div class="card-subtitle">Average project output & industry credentials across branches</div>
+              </div>
+            </div>
+            <div class="chart-container" style="height: 280px;">
+              <canvas id="branchComparisonChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Chart 4: Industry Readiness Split -->
+          <div class="chart-card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">🎯 Employability Readiness Footprint</div>
+                <div class="card-subtitle">Internship, GitHub code repos & Portfolio deployment status</div>
+              </div>
+            </div>
+            <div class="chart-container" style="height: 280px;">
+              <canvas id="readinessSplitChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= BRANCH PERFORMANCE COMPARISON TABLE ================= -->
+        <div class="table-card" style="margin-bottom: 2rem;">
+          <div class="card-header">
+            <div>
+              <div class="card-title">🏫 Department-wise Performance Benchmarking</div>
+              <div class="card-subtitle">Academic GPA, practical projects, certifications, and internship rates</div>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Department / Branch</th>
+                  <th>Enrolled Students</th>
+                  <th>Average CGPA</th>
+                  <th>Avg Projects / Student</th>
+                  <th>Avg Certifications</th>
+                  <th>Internship Rate</th>
+                </tr>
+              </thead>
+              <tbody id="branch-benchmarking-tbody">
+                <tr>
+                  <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">
+                    Loading department benchmarks...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ================= PERFORMANCE LEADERBOARD TABLE ================= -->
+        <div class="table-card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">🏆 Student Performance & Readiness Ledger</div>
+              <div class="card-subtitle">Holistic ranking based on CGPA, projects, certifications, attendance, and technical footprint</div>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Student Info</th>
+                  <th>Branch</th>
+                  <th>CGPA</th>
+                  <th>Projects</th>
+                  <th>Certs</th>
+                  <th>Internship</th>
+                  <th>Backlogs</th>
+                  <th>Online Profiles</th>
+                  <th>Readiness Score</th>
+                  <th style="text-align: right;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboard-tbody">
+                <tr>
+                  <td colspan="11" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                    Loading performance ledger...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/performance.js"></script>
+</body>
+</html>

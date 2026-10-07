@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attendance Analytics - Student Intelligence System</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-icon">🎓</div>
+        <div class="logo-text">
+          EduAnalytics
+          <span>College Intelligence</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-label">Dashboards</div>
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span>1. Admin Dashboard</span>
+        </a>
+        <a href="student-dashboard.html" class="nav-item">
+          <span class="nav-icon">🎓</span>
+          <span>2. Student Portal</span>
+        </a>
+
+        <div class="nav-label" style="margin-top: 0.75rem;">Core Modules</div>
+        <a href="students.html" class="nav-item">
+          <span class="nav-icon">👥</span>
+          <span>3. Students</span>
+        </a>
+        <a href="attendance.html" class="nav-item active">
+          <span class="nav-icon">📅</span>
+          <span>4. Attendance</span>
+        </a>
+        <a href="performance.html" class="nav-item">
+          <span class="nav-icon">📈</span>
+          <span>5. Performance</span>
+        </a>
+        <a href="placement.html" class="nav-item">
+          <span class="nav-icon">💼</span>
+          <span>6. Placement Drives</span>
+        </a>
+
+        <div class="nav-label" style="margin-top: 0.75rem;">Placement Screening</div>
+        <a href="eligibility.html" class="nav-item">
+          <span class="nav-icon">🎯</span>
+          <span>7. Eligibility Engine</span>
+        </a>
+        <a href="drive-candidates.html" class="nav-item">
+          <span class="nav-icon">📋</span>
+          <span>8. Drive Candidates</span>
+        </a>
+
+        <div class="nav-label" style="margin-top: 0.75rem;">Intelligence & ML</div>
+        <a href="ml-dashboard.html" class="nav-item">
+          <span class="nav-icon">🤖</span>
+          <span>9. ML Predictions</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="system-status">
+          <div class="status-dot"></div>
+          <span>SQLite Database Connected</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="main-wrapper">
+      <header class="topbar">
+        <div class="topbar-title">
+          <h1>Subject-wise Attendance Analytics</h1>
+          <p>Rule-based threshold indicators & consecutive classes recovery calculator</p>
+        </div>
+        <div class="topbar-actions">
+          <div id="backend-status-pill" class="api-pill">
+            <span class="status-dot"></span>
+            <span id="backend-status-text">Checking Backend...</span>
+          </div>
+          <button id="openAddAttendanceModal" class="btn btn-primary btn-sm">+ Record Attendance</button>
+        </div>
+      </header>
+
+      <div class="content-area">
+
+        <!-- Scope & Filter Controls -->
+        <div class="filter-bar">
+          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; flex: 1;">
+            <!-- Select student scope -->
+            <div style="display: flex; flex-direction: column; gap: 0.2rem;">
+              <select id="student-scope-select" class="select-control" style="font-weight: 600; min-width: 260px;">
+                <option value="">🏫 All Students (College-wide Aggregate)</option>
+                <!-- Populated dynamically with students -->
+              </select>
+            </div>
+
+            <!-- Filter by subject -->
+            <div style="display: flex; flex-direction: column; gap: 0.2rem;">
+              <select id="subject-filter-select" class="select-control">
+                <option value="">All Subjects</option>
+                <option value="Machine Learning">Machine Learning</option>
+                <option value="Database Systems">Database Systems</option>
+                <option value="Computer Networks">Computer Networks</option>
+                <option value="Operating Systems">Operating Systems</option>
+                <option value="Cloud Computing">Cloud Computing</option>
+                <option value="Embedded Systems">Embedded Systems</option>
+                <option value="Thermodynamics">Thermodynamics</option>
+              </select>
+            </div>
+
+            <!-- Filter by risk level -->
+            <div style="display: flex; flex-direction: column; gap: 0.2rem;">
+              <select id="risk-filter-select" class="select-control">
+                <option value="">All Risk Tiers</option>
+                <option value="Low Risk">🟢 Low Risk (≥ 85%)</option>
+                <option value="Medium Risk">🟡 Medium Risk (75–84%)</option>
+                <option value="High Risk">🔴 High Risk (&lt; 75%)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Active student indicator -->
+          <div id="active-student-display" style="font-size: 0.85rem; color: var(--text-muted);">
+            Scope: <strong style="color: var(--accent-cyan);">College-wide</strong>
+          </div>
+        </div>
+
+        <!-- ================= KPI METRIC CARDS ================= -->
+        <div class="metrics-grid">
+          <!-- 1. Overall Attendance Percentage -->
+          <div class="metric-card">
+            <div class="metric-info">
+              <h3>1. Overall Attendance</h3>
+              <div id="kpi-overall-percentage" class="metric-value">--%</div>
+              <div id="kpi-risk-badge-container" style="margin-top: 0.35rem;">
+                <span class="risk-pill risk-low">Checking...</span>
+              </div>
+            </div>
+            <div class="metric-icon-box icon-cyan">📊</div>
+          </div>
+
+          <!-- 2. Total Classes Conducted & Attended -->
+          <div class="metric-card">
+            <div class="metric-info">
+              <h3>2. Classes Tracked</h3>
+              <div id="kpi-classes-ratio" class="metric-value">-- / --</div>
+              <div id="kpi-classes-missed" class="metric-subtitle">-- classes missed</div>
+            </div>
+            <div class="metric-icon-box icon-blue">📚</div>
+          </div>
+
+          <!-- 3. High Risk Subjects (< 75%) -->
+          <div class="metric-card">
+            <div class="metric-info">
+              <h3>3. Subjects Below 75%</h3>
+              <div id="kpi-below-75-count" class="metric-value" style="color: #f87171;">--</div>
+              <div class="metric-subtitle">Requires immediate recovery</div>
+            </div>
+            <div class="metric-icon-box icon-rose">⚠️</div>
+          </div>
+
+          <!-- 4. Consecutive Classes Required to reach 75% -->
+          <div class="metric-card">
+            <div class="metric-info">
+              <h3>4. Classes Needed for 75%</h3>
+              <div id="kpi-classes-needed" class="metric-value" style="color: #fbbf24;">--</div>
+              <div class="metric-subtitle">Formula: 3T - 4A consecutive</div>
+            </div>
+            <div class="metric-icon-box icon-amber">🎯</div>
+          </div>
+        </div>
+
+        <!-- Formula Callout Banner -->
+        <div class="calc-formula-banner">
+          <span style="font-size: 1.25rem;">📐</span>
+          <div>
+            <strong>Rule-based Recovery Formula:</strong>
+            To reach the mandatory 75% threshold, the required consecutive attended lectures <code>x</code> is calculated as:
+            <code>x = max(0, 3 × Total_Classes - 4 × Classes_Attended)</code>.
+            <em>(Note: Risk classification is currently an academic rule-based indicator, not ML).</em>
+          </div>
+        </div>
+
+        <!-- ================= CHARTS SECTION ================= -->
+        <div class="charts-grid">
+          <!-- Subject-wise Attendance Bar Chart -->
+          <div class="chart-card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">📊 2. Subject-wise Attendance Breakdown</div>
+                <div class="card-subtitle">Comparison against mandatory 75% threshold</div>
+              </div>
+            </div>
+            <div class="chart-container" style="height: 300px;">
+              <canvas id="subjectWiseChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Attendance Distribution Doughnut Chart -->
+          <div class="chart-card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">🎯 3. Risk Distribution (Rule-Based)</div>
+                <div class="card-subtitle">Low Risk (≥85%), Med (75-84%), High (&lt;75%)</div>
+              </div>
+            </div>
+            <div class="chart-container" style="height: 300px;">
+              <canvas id="distributionChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Attendance Trend Over Time Line Chart -->
+        <div class="chart-card" style="margin-bottom: 2rem;">
+          <div class="card-header">
+            <div>
+              <div class="card-title">📈 4. Attendance Trend Over Time</div>
+              <div class="card-subtitle">Chronological attendance tracking across sessions</div>
+            </div>
+          </div>
+          <div class="chart-container" style="height: 240px;">
+            <canvas id="trendChart"></canvas>
+          </div>
+        </div>
+
+        <!-- ================= 5 & 6. SUBJECTS BELOW 75% ALERT CARDS ================= -->
+        <div class="table-card" style="margin-bottom: 2rem; border-color: rgba(239, 68, 68, 0.3);">
+          <div class="card-header">
+            <div>
+              <div class="card-title" style="color: #f87171;">
+                ⚠️ 5 & 6. Critical Alert: Subjects Below 75% & Classes Required to Recover
+              </div>
+              <div class="card-subtitle">
+                Automated counseling alerts pinpointing the exact lectures needed to restore exam eligibility
+              </div>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Subject</th>
+                  <th>Student Info</th>
+                  <th>Conducted</th>
+                  <th>Attended</th>
+                  <th>Current %</th>
+                  <th>Risk Tier</th>
+                  <th style="color: #fbbf24;">Classes Needed for 75%</th>
+                  <th>Actionable Recovery Plan</th>
+                </tr>
+              </thead>
+              <tbody id="below-75-tbody">
+                <tr>
+                  <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                    Checking subject compliance...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ================= COMPLETE ATTENDANCE RECORDS TABLE ================= -->
+        <div class="table-card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">📋 Full Subject Attendance Ledger</div>
+              <div class="card-subtitle">Subject records with auto-calculated percentage and missed classes</div>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="loadAttendanceModule()">🔄 Refresh</button>
+          </div>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>Subject</th>
+                  <th>Total Classes</th>
+                  <th>Attended</th>
+                  <th>Missed</th>
+                  <th>Attendance %</th>
+                  <th>Risk Status</th>
+                  <th>Date</th>
+                  <th style="text-align: right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="attendance-tbody">
+                <tr>
+                  <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                    Loading attendance records...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ================= ADD / EDIT ATTENDANCE MODAL ================= -->
+  <div id="attendanceModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 560px;">
+      <div class="modal-header">
+        <h2 id="attModalTitle">Record Subject Attendance</h2>
+        <button id="closeAttendanceModal" class="close-btn">&times;</button>
+      </div>
+
+      <form id="attendanceForm">
+        <input type="hidden" id="form-att-id" value="">
+
+        <div class="form-grid">
+          <div class="form-group full-width">
+            <label for="form-att-student">Select Student *</label>
+            <select id="form-att-student" required>
+              <option value="">-- Choose Student --</option>
+            </select>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="form-att-subject">Subject Name *</label>
+            <input type="text" id="form-att-subject" required placeholder="e.g. Machine Learning">
+          </div>
+
+          <div class="form-group">
+            <label for="form-att-total">Total Classes Conducted *</label>
+            <input type="number" id="form-att-total" min="1" value="40" required>
+          </div>
+
+          <div class="form-group">
+            <label for="form-att-attended">Classes Attended *</label>
+            <input type="number" id="form-att-attended" min="0" value="32" required>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="form-att-date">Date Recorded *</label>
+            <input type="date" id="form-att-date" required>
+          </div>
+
+          <!-- Live Automatic Calculation Preview -->
+          <div class="form-group full-width" style="background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.85rem;">
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem;">AUTOMATIC CALCULATION PREVIEW:</div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">Calculated: </span>
+                <strong id="preview-percentage" style="font-size: 1.15rem; color: #fff;">80.0%</strong>
+                <span id="preview-missed" style="font-size: 0.8rem; color: var(--text-muted); margin-left: 0.5rem;">(8 Missed)</span>
+              </div>
+              <span id="preview-risk-pill" class="risk-pill risk-medium">Medium Risk</span>
+            </div>
+            <div class="progress-track" style="margin-top: 0.5rem;">
+              <div id="preview-progress-fill" class="progress-fill fill-medium-risk" style="width: 80%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+          <button type="button" class="btn btn-secondary" onclick="closeAttendanceModal()">
+            Cancel
+          </button>
+          <button type="submit" id="saveAttBtn" class="btn btn-primary">
+            Save Attendance
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/attendance.js"></script>
+</body>
+</html>

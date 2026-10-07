@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Comprehensive Dashboard & Recommendations - EduAnalytics</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-icon">🎓</div>
+        <div class="logo-text">
+          EduAnalytics
+          <span>College Intelligence</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-label">Dashboards</div>
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span>1. Admin Dashboard</span>
+        </a>
+        <a href="student-dashboard.html" class="nav-item active">
+          <span class="nav-icon">🎓</span>
+          <span>2. Student Portal</span>
+        </a>
+
+        <div class="nav-label" style="margin-top: 0.75rem;">Core Modules</div>
+        <a href="students.html" class="nav-item">
+          <span class="nav-icon">👥</span>
+          <span>3. Students</span>
+        </a>
+        <a href="attendance.html" class="nav-item">
+          <span class="nav-icon">📅</span>
+          <span>4. Attendance</span>
+        </a>
+        <a href="performance.html" class="nav-item">
+          <span class="nav-icon">📈</span>
+          <span>5. Performance</span>
+        </a>
+        <a href="placement.html" class="nav-item">
+          <span class="nav-icon">💼</span>
+          <span>6. Placement Drives</span>
+        </a>
+
+        <div class="nav-label" style="margin-top: 0.75rem;">Placement Screening</div>
+        <a href="eligibility.html" class="nav-item">
+          <span class="nav-icon">🎯</span>
+          <span>7. Eligibility Engine</span>
+        </a>
+        <a href="drive-candidates.html" class="nav-item">
+          <span class="nav-icon">📋</span>
+          <span>8. Drive Candidates</span>
+        </a>
+
+        <div class="nav-label" style="margin-top: 0.75rem;">Intelligence & ML</div>
+        <a href="ml-dashboard.html" class="nav-item">
+          <span class="nav-icon">🤖</span>
+          <span>9. ML Predictions</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="system-status">
+          <div class="status-dot"></div>
+          <span>Student Portal Active</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="main-wrapper">
+      <header class="topbar">
+        <div class="topbar-title">
+          <h1>Student Personalized Dashboard</h1>
+          <p>360° Academic Intelligence, Attendance Recovery & Placement Readiness Roadmap</p>
+        </div>
+        <div class="topbar-actions" style="display: flex; align-items: center; gap: 0.75rem;">
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <label for="student-selector" style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); white-space: nowrap;">
+              👤 Select Student:
+            </label>
+            <select id="student-selector" class="form-control" style="min-width: 280px; padding: 0.4rem 0.75rem; font-size: 0.85rem;" onchange="handleStudentChange()">
+              <option value="">Loading students...</option>
+            </select>
+          </div>
+          <div id="backend-status-pill" class="api-pill">
+            <span class="status-dot"></span>
+            <span id="backend-status-text">Checking Backend...</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="content-area">
+
+        <!-- ================= SECTION 1: STUDENT PROFILE HERO ================= -->
+        <div class="student-hero-card">
+          <div class="student-hero-flex">
+            <div class="student-avatar-wrap">
+              <div id="stu-avatar" class="student-avatar">AS</div>
+              <div class="student-hero-info">
+                <h2>
+                  <span id="stu-name">Loading Student Profile...</span>
+                  <span id="stu-placement-status-badge" class="badge-tag">Eligible</span>
+                </h2>
+                <div class="student-hero-meta">
+                  <span id="stu-roll">STU0000</span>
+                  <span>•</span>
+                  <span id="stu-branch-year">Branch - Year</span>
+                  <span>•</span>
+                  <span id="stu-email">email@college.edu</span>
+                </div>
+                <div style="margin-top: 0.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                  <span id="stu-github-badge" class="pill-sm pill-eligible">🐙 GitHub Verified</span>
+                  <span id="stu-portfolio-badge" class="pill-sm pill-eligible">🌐 Live Portfolio</span>
+                  <span id="stu-backlogs-badge" class="pill-sm pill-ineligible">0 Backlogs</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="hero-stats-row">
+              <div class="hero-stat-pill">
+                <span>Overall Att.</span>
+                <strong id="hero-stat-att">--%</strong>
+              </div>
+              <div class="hero-stat-pill">
+                <span>CGPA</span>
+                <strong id="hero-stat-cgpa" style="color: var(--accent-emerald);">--</strong>
+              </div>
+              <div class="hero-stat-pill">
+                <span>Projects</span>
+                <strong id="hero-stat-proj">--</strong>
+              </div>
+              <div class="hero-stat-pill">
+                <span>Certifications</span>
+                <strong id="hero-stat-certs">--</strong>
+              </div>
+              <div class="hero-stat-pill">
+                <span>Placement Tier</span>
+                <strong id="hero-stat-readiness" style="color: var(--accent-amber); font-size: 0.95rem;">--</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= SECTION 2: ATTENDANCE & ACADEMIC PERFORMANCE (DUAL COLUMN) ================= -->
+        <div class="charts-grid" style="grid-template-columns: 1.4fr 1fr; margin-bottom: 1.5rem;">
+          
+          <!-- ATTENDANCE OVERVIEW & SUBJECT-WISE BREAKDOWN -->
+          <div class="table-card" style="margin-bottom: 0;">
+            <div class="card-header">
+              <div>
+                <div class="card-title">📅 Attendance & Subject Defaulter Audit</div>
+                <div class="card-subtitle">Mandatory University compliance benchmark: 75.0%</div>
+              </div>
+              <div id="att-overall-badge" class="pill-sm pill-eligible">--% Compliant</div>
+            </div>
+
+            <!-- Subject-wise Attendance Table -->
+            <div style="overflow-x: auto; padding: 0.5rem 1rem 1rem 1rem;">
+              <table class="data-table" style="font-size: 0.85rem;">
+                <thead>
+                  <tr>
+                    <th>Subject</th>
+                    <th>Attended / Total</th>
+                    <th>Percentage</th>
+                    <th>Risk Standing</th>
+                    <th>Classes for 75%</th>
+                  </tr>
+                </thead>
+                <tbody id="subject-attendance-tbody">
+                  <tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">Loading subject attendance records...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- ACADEMIC PERFORMANCE & PORTFOLIO -->
+          <div class="chart-card" style="margin-bottom: 0;">
+            <div class="card-header">
+              <div>
+                <div class="card-title">📈 Academic & Technical Portfolio</div>
+                <div class="card-subtitle">Grading scale, projects & verified credentials</div>
+              </div>
+            </div>
+
+            <div style="padding: 1rem 1.25rem; display: flex; flex-direction: column; gap: 1rem;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 0.75rem;">
+                  <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">CGPA (Scale 10.0)</div>
+                  <div id="acad-cgpa-val" style="font-size: 1.4rem; font-weight: 800; color: var(--accent-emerald);">--</div>
+                  <div id="acad-standing-text" style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.2rem;">--</div>
+                </div>
+
+                <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 0.75rem;">
+                  <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Internship Status</div>
+                  <div id="acad-intern-val" style="font-size: 1.15rem; font-weight: 700; color: #fff; margin-top: 0.2rem;">--</div>
+                  <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Industrial Exposure</div>
+                </div>
+              </div>
+
+              <div>
+                <div style="font-size: 0.8rem; font-weight: 700; color: #fff; margin-bottom: 0.4rem;">Technical Skill Stack:</div>
+                <div id="acad-skills-container" style="display: flex; flex-wrap: wrap; gap: 0.4rem;">
+                  <span class="badge-tag">Loading skills...</span>
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; border-top: 1px solid var(--border-color); pt: 0.75rem;">
+                <div>
+                  <div style="font-size: 0.75rem; color: var(--text-muted);">Completed Projects</div>
+                  <strong id="acad-proj-val" style="font-size: 1.2rem; color: #fff;">--</strong>
+                </div>
+                <div>
+                  <div style="font-size: 0.75rem; color: var(--text-muted);">Certifications</div>
+                  <strong id="acad-certs-val" style="font-size: 1.2rem; color: #fff;">--</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ================= SECTION 3: MACHINE LEARNING PREDICTIONS ================= -->
+        <div class="card-header" style="margin-bottom: 0.75rem;">
+          <div>
+            <div class="card-title">🤖 Machine Learning Predictive Intelligence</div>
+            <div class="card-subtitle">Real-time dual inference powered by Scikit-Learn models</div>
+          </div>
+        </div>
+
+        <div class="charts-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 1.5rem;">
+          
+          <!-- MODEL 1: ATTENDANCE RISK PREDICTION -->
+          <div class="chart-card" id="card-ml-att" style="margin-bottom: 0;">
+            <div class="card-header">
+              <div>
+                <div class="card-title" style="font-size: 0.95rem;">1. Attendance Defaulter Risk Model</div>
+                <div class="card-subtitle">Random Forest Classifier • 7 Feature Pipeline</div>
+              </div>
+              <span id="ml-att-badge" class="pill-sm pill-eligible">Low Risk</span>
+            </div>
+            
+            <div style="padding: 1rem 1.25rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">Model Confidence:</span>
+                <strong id="ml-att-confidence" style="color: #fff; font-size: 1rem;">--%</strong>
+              </div>
+
+              <!-- Probability Bars -->
+              <div id="ml-att-probs-container" style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
+                <!-- Generated by JS -->
+              </div>
+
+              <!-- Key Factors -->
+              <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 0.75rem;">
+                <div style="font-size: 0.78rem; font-weight: 700; color: #fff; margin-bottom: 0.35rem;">Model Decision Drivers:</div>
+                <ul id="ml-att-factors-list" style="padding-left: 1.25rem; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0;">
+                  <li>Evaluating historical attendance trend...</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- MODEL 2: PLACEMENT READINESS PREDICTION -->
+          <div class="chart-card" id="card-ml-place" style="margin-bottom: 0;">
+            <div class="card-header">
+              <div>
+                <div class="card-title" style="font-size: 0.95rem;">2. Placement Readiness Model</div>
+                <div class="card-subtitle">Logistic Regression • 8 Feature Pipeline</div>
+              </div>
+              <span id="ml-place-badge" class="pill-sm pill-eligible">High Readiness</span>
+            </div>
+
+            <div style="padding: 1rem 1.25rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">Model Confidence:</span>
+                <strong id="ml-place-confidence" style="color: #fff; font-size: 1rem;">--%</strong>
+              </div>
+
+              <!-- Probability Bars -->
+              <div id="ml-place-probs-container" style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
+                <!-- Generated by JS -->
+              </div>
+
+              <!-- Key Factors -->
+              <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 0.75rem;">
+                <div style="font-size: 0.78rem; font-weight: 700; color: #fff; margin-bottom: 0.35rem;">Model Decision Drivers:</div>
+                <ul id="ml-place-factors-list" style="padding-left: 1.25rem; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0;">
+                  <li>Evaluating academic and skill profile...</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ================= SECTION 4: PERSONALIZED RECOMMENDATIONS SYSTEM ================= -->
+        <div class="table-card" style="margin-bottom: 1.5rem;">
+          <div class="card-header">
+            <div>
+              <div class="card-title">💡 Personalized Improvement Recommendations</div>
+              <div class="card-subtitle">Actionable guidance synthesized from Attendance, ML Predictions, Academics & Drive Criteria</div>
+            </div>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <span id="rec-count-badge" class="badge-tag" style="background: var(--primary-glow); color: #a5b4fc;">0 Suggestions</span>
+            </div>
+          </div>
+
+          <div style="padding: 1.25rem;">
+            <!-- Filter Tabs -->
+            <div class="filter-tabs" style="margin-bottom: 1.25rem;">
+              <button class="filter-tab-btn active" onclick="filterRecommendations('all', this)">All Recommendations</button>
+              <button class="filter-tab-btn" onclick="filterRecommendations('Attendance Recovery', this)">📅 Attendance Actions</button>
+              <button class="filter-tab-btn" onclick="filterRecommendations('Placement Readiness', this)">🚀 Placement & Projects</button>
+              <button class="filter-tab-btn" onclick="filterRecommendations('Placement Drives', this)">💼 Placement Drives</button>
+            </div>
+
+            <!-- Recommendations Card Container -->
+            <div id="recommendations-container">
+              <div style="text-align: center; color: var(--text-muted); padding: 2rem;">Generating personalized recommendations...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= SECTION 5: PLACEMENT DRIVES (ELIGIBLE & NOT ELIGIBLE) ================= -->
+        <div class="table-card" style="margin-bottom: 1.5rem;">
+          <div class="card-header">
+            <div>
+              <div class="card-title">💼 Placement Drives Screening Evaluation</div>
+              <div class="card-subtitle">Verified eligibility for active and upcoming campus recruitment drives</div>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+              <span id="drives-eligible-pill" class="pill-sm pill-eligible">-- Eligible</span>
+              <span id="drives-ineligible-pill" class="pill-sm pill-ineligible">-- Ineligible</span>
+            </div>
+          </div>
+
+          <div style="padding: 1.25rem;">
+            <div class="filter-tabs" style="margin-bottom: 1.25rem;">
+              <button id="tab-btn-eligible" class="filter-tab-btn active" onclick="switchDrivesTab('eligible')">
+                ✅ Eligible Drives (<span id="count-tab-eligible">0</span>)
+              </button>
+              <button id="tab-btn-ineligible" class="filter-tab-btn" onclick="switchDrivesTab('ineligible')">
+                ❌ Not Eligible Drives (<span id="count-tab-ineligible">0</span>)
+              </button>
+            </div>
+
+            <!-- Tab Content: Eligible Drives -->
+            <div id="drives-content-eligible">
+              <div id="eligible-drives-list">
+                <div style="text-align: center; color: var(--text-muted); padding: 1.5rem;">Evaluating drive eligibility...</div>
+              </div>
+            </div>
+
+            <!-- Tab Content: Not Eligible Drives -->
+            <div id="drives-content-ineligible" style="display: none;">
+              <div id="ineligible-drives-list">
+                <div style="text-align: center; color: var(--text-muted); padding: 1.5rem;">Evaluating drive eligibility...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/student-dashboard.js"></script>
+</body>
+</html>
